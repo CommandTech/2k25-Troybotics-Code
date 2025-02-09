@@ -5,6 +5,7 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.SparkMaxConfig;
 
 import java.io.IOException;
 import org.json.simple.parser.ParseException;
@@ -15,6 +16,7 @@ import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPLTVController;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.DriveFeedforwards;
+import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -35,11 +37,26 @@ public class Drivetrain extends SubsystemBase {
   private RobotConfig config = null;
   private DifferentialDriveKinematics kinematics;
   private Pose2d pose;
+  private SparkMaxConfig leftConfig;
+  private SparkMaxConfig rightConfig;
 
   /** Creates a new Drive. */
   public Drivetrain() {
       leftDrive = new SparkMax(Constants.MotorConstants.LEFT_MOTOR_ID,MotorType.kBrushless);
       rightDrive = new SparkMax(Constants.MotorConstants.RIGHT_MOTOR_ID,MotorType.kBrushless);
+      
+      leftConfig = new SparkMaxConfig();
+      leftConfig.inverted(Constants.MotorConstants.LEFT_MOTOR_INVERTED);
+      leftConfig.smartCurrentLimit(Constants.MotorConstants.LEFT_MOTOR_AMP_LIMIT);
+
+      leftDrive.configure(leftConfig, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
+
+      rightConfig = new SparkMaxConfig();
+      rightConfig.inverted(Constants.MotorConstants.RIGHT_MOTOR_INVERTED);
+      rightConfig.smartCurrentLimit(Constants.MotorConstants.RIGHT_MOTOR_AMP_LIMIT);
+
+      rightDrive.configure(rightConfig, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
+
 
       differentialDrive = new DifferentialDrive(leftDrive, rightDrive);
       addChild("Differential Drive 1", differentialDrive);

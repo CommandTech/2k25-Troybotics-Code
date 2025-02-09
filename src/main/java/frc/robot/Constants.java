@@ -15,10 +15,20 @@ package frc.robot;
 public final class Constants {
   public static class MotorConstants {
     public static final int LEFT_MOTOR_ID = 0;
+    public static final boolean LEFT_MOTOR_INVERTED = false;
+    public static final int LEFT_MOTOR_AMP_LIMIT = 40;
+
     public static final int RIGHT_MOTOR_ID = 1;
+    public static final boolean RIGHT_MOTOR_INVERTED = false;
+    public static final int RIGHT_MOTOR_AMP_LIMIT = 40;
     
     public static final int CORAL_MOTOR_ID = 2;
+    public static final boolean CORAL_MOTOR_INVERTED = false;
+    public static final int CORAL_MOTOR_AMP_LIMIT = 40;
+
     public static final int ALGAE_MOTOR_ID = 3;
+    public static final boolean ALGAE_MOTOR_INVERTED = false;
+    public static final int ALGAE_MOTOR_AMP_LIMIT = 40;
   }
   public static class OperatorConstants {
     public static final int DRIVER_PORT = 0;

@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+import com.revrobotics.spark.config.SparkMaxConfig;
+import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkMax;
 
 import edu.wpi.first.wpilibj2.command.Command;
@@ -12,9 +14,15 @@ import frc.robot.Constants;
 
 public class Algae extends SubsystemBase {
   private SparkMax algaeMotor;
+  private SparkMaxConfig config;
   /** Creates a new Algae. */
   public Algae() {
       algaeMotor = new SparkMax(Constants.MotorConstants.ALGAE_MOTOR_ID, SparkMax.MotorType.kBrushless);
+      config = new SparkMaxConfig();
+      config.inverted(Constants.MotorConstants.ALGAE_MOTOR_INVERTED);
+      config.smartCurrentLimit(Constants.MotorConstants.ALGAE_MOTOR_AMP_LIMIT);
+
+      algaeMotor.configure(config, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
   }
 
   @Override
