@@ -34,6 +34,7 @@ public class Drivetrain extends SubsystemBase {
   private DifferentialDrive differentialDrive;
   private RobotConfig config = null;
   private DifferentialDriveKinematics kinematics;
+  private Pose2d pose;
 
   /** Creates a new Drive. */
   public Drivetrain() {
@@ -46,6 +47,7 @@ public class Drivetrain extends SubsystemBase {
       differentialDrive.setMaxOutput(1.0);
 
       kinematics = new DifferentialDriveKinematics(0.8204);
+      pose = new Pose2d();
       
       try {
         config = RobotConfig.fromGUISettings();
@@ -109,12 +111,14 @@ public class Drivetrain extends SubsystemBase {
 
   public Pose2d getPose()
   {
-    return null;
+    return pose;
   }
-  public Pose2d resetPose(Pose2d pose)
+  public Pose2d resetPose(Pose2d newPose)
   {
-    return null;
+    pose = newPose;
+    return pose;
   }
+  
   public DifferentialDriveWheelSpeeds getWheelSpeed(){
     return new DifferentialDriveWheelSpeeds(leftDrive.getEncoder().getVelocity(), rightDrive.getEncoder().getVelocity());
   }
