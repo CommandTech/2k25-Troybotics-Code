@@ -1,0 +1,54 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 3.848053278688525,
+        "y": 2.84421106557377
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 3.3205942622950824,
+        "y": 1.68140368852459
+      },
+      "isLocked": false,
+      "linkedName": "MC Start"
+    },
+    {
+      "anchor": {
+        "x": 1.5943647540983608,
+        "y": 0.734375
+      },
+      "prevControl": {
+        "x": 2.481454918032787,
+        "y": 2.0530225409836067
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "MC Station 1"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 0.0
+  },
+  "reversed": true,
+  "folder": "Multi Coral",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 0.0
+  },
+  "useDefaultConstraints": true
+}
