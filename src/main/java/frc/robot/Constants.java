@@ -29,6 +29,16 @@ public final class Constants {
     public static final int ALGAE_MOTOR_ID = 3;
     public static final boolean ALGAE_MOTOR_INVERTED = false;
     public static final int ALGAE_MOTOR_AMP_LIMIT = 40;
+
+    public static final double DRIVE_P = 0.1;
+    public static final double DRIVE_I = 0.0;
+    public static final double DRIVE_D = 0.1;
+    public static final double DRIVE_FF = 1/473; //Might be 1/565 if using vortex
+  }
+  public static class DriveConstants {
+    public static final double GEAR_REDUCTION = 1.0;
+    public static final double WHEEL_DIAMETER_METERS = 0.1524;
+    public static final double TRACK_WIDTH_METERS = 0.820;
   }
   public static class OperatorConstants {
     public static final int DRIVER_PORT = 0;

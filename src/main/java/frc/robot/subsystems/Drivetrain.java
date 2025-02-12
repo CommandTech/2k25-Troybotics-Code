@@ -16,10 +16,13 @@ import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPLTVController;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.DriveFeedforwards;
+import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkBase;
+import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
@@ -39,17 +42,35 @@ public class Drivetrain extends SubsystemBase {
   private Pose2d pose;
   private SparkMaxConfig leftConfig;
   private SparkMaxConfig rightConfig;
+  private RelativeEncoder leftEncoder;
+  private RelativeEncoder rightEncoder;
+  private SparkClosedLoopController leftController;
+  private SparkClosedLoopController rightController;
+  
+  private double lastLeftPositionMeters = 0.0;
+  private double lastRightPositionMeters = 0.0;
 
   /** Creates a new Drive. */
   public Drivetrain() {
       leftDrive = new SparkMax(Constants.MotorConstants.LEFT_MOTOR_ID,MotorType.kBrushless);
-      rightDrive = new SparkMax(Constants.MotorConstants.RIGHT_MOTOR_ID,MotorType.kBrushless);
-      
+      leftEncoder = leftDrive.getEncoder();
+      leftController = leftDrive.getClosedLoopController();
+
       leftConfig = new SparkMaxConfig();
       leftConfig.inverted(Constants.MotorConstants.LEFT_MOTOR_INVERTED);
       leftConfig.smartCurrentLimit(Constants.MotorConstants.LEFT_MOTOR_AMP_LIMIT);
-
+      leftConfig.closedLoop
+        .p(Constants.MotorConstants.DRIVE_P)
+        .i(Constants.MotorConstants.DRIVE_I)
+        .d(Constants.MotorConstants.DRIVE_D)
+        .velocityFF(Constants.MotorConstants.DRIVE_FF)
+        .outputRange(0.0, 1.0);
       leftDrive.configure(leftConfig, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
+
+
+      rightDrive = new SparkMax(Constants.MotorConstants.RIGHT_MOTOR_ID,MotorType.kBrushless);
+      rightController = rightDrive.getClosedLoopController();
+      rightEncoder = rightDrive.getEncoder();
 
       rightConfig = new SparkMaxConfig();
       rightConfig.inverted(Constants.MotorConstants.RIGHT_MOTOR_INVERTED);
@@ -101,6 +122,29 @@ public class Drivetrain extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    double leftPositionMetersDelta =
+      getLeftPositionMeters() - lastLeftPositionMeters;
+    double rightPositionMetersDelta =
+      getRightPositionMeters() - lastRightPositionMeters;
+    double avgPositionMetersDelta =
+      (leftPositionMetersDelta + rightPositionMetersDelta) / 2.0;
+
+    // Update the pose based on the average position delta
+    pose = pose.exp(new Twist2d(
+      avgPositionMetersDelta,
+      0.0,
+      (rightPositionMetersDelta - leftPositionMetersDelta)
+                  / Constants.DriveConstants.TRACK_WIDTH_METERS));
+    
+    lastLeftPositionMeters = getLeftPositionMeters();
+    lastRightPositionMeters = getRightPositionMeters();
+  }
+
+  public double getLeftPositionMeters() {
+    return leftEncoder.getPosition() * Constants.DriveConstants.WHEEL_DIAMETER_METERS;
+  }
+  public double getRightPositionMeters() {
+    return rightEncoder.getPosition() * Constants.DriveConstants.WHEEL_DIAMETER_METERS;
   }
 
   // public void setDrive(double left, double right) {
