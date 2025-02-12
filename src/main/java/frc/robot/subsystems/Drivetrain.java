@@ -22,16 +22,20 @@ import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
+import edu.wpi.first.math.kinematics.DifferentialDriveWheelPositions;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import edu.wpi.first.math.estimator.DifferentialDrivePoseEstimator;
 
 public class Drivetrain extends SubsystemBase {
   private SparkMax leftDrive;
@@ -46,6 +50,8 @@ public class Drivetrain extends SubsystemBase {
   private RelativeEncoder rightEncoder;
   private SparkClosedLoopController leftController;
   private SparkClosedLoopController rightController;
+  private DifferentialDrivePoseEstimator poseEstimator;
+  private DifferentialDriveWheelPositions wheelPositions;
   
   private double lastLeftPositionMeters = 0.0;
   private double lastRightPositionMeters = 0.0;
@@ -86,7 +92,16 @@ public class Drivetrain extends SubsystemBase {
 
       kinematics = new DifferentialDriveKinematics(0.8204);
       pose = new Pose2d();
-      
+      wheelPositions = new DifferentialDriveWheelPositions(leftEncoder.getPosition(), rightEncoder.getPosition());
+
+      poseEstimator = new DifferentialDrivePoseEstimator(
+        kinematics,
+        new Rotation2d(),
+        leftEncoder.getPosition(),
+        rightEncoder.getPosition(),
+        pose
+      );
+
       try {
         config = RobotConfig.fromGUISettings();
       } catch (IOException e) {
@@ -121,23 +136,28 @@ public class Drivetrain extends SubsystemBase {
 
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
-    double leftPositionMetersDelta =
-      getLeftPositionMeters() - lastLeftPositionMeters;
-    double rightPositionMetersDelta =
-      getRightPositionMeters() - lastRightPositionMeters;
-    double avgPositionMetersDelta =
-      (leftPositionMetersDelta + rightPositionMetersDelta) / 2.0;
+    // // This method will be called once per scheduler run
+    // double leftPositionMetersDelta =
+    //   getLeftPositionMeters() - lastLeftPositionMeters;
+    // double rightPositionMetersDelta =
+    //   getRightPositionMeters() - lastRightPositionMeters;
+    // double avgPositionMetersDelta =
+    //   (leftPositionMetersDelta + rightPositionMetersDelta) / 2.0;
 
-    // Update the pose based on the average position delta
-    pose = pose.exp(new Twist2d(
-      avgPositionMetersDelta,
-      0.0,
-      (rightPositionMetersDelta - leftPositionMetersDelta)
-                  / Constants.DriveConstants.TRACK_WIDTH_METERS));
+    // // Update the pose based on the average position delta
+    // pose = pose.exp(new Twist2d(
+    //   avgPositionMetersDelta,
+    //   0.0,
+    //   (rightPositionMetersDelta - leftPositionMetersDelta)
+    //               / Constants.DriveConstants.TRACK_WIDTH_METERS));
     
-    lastLeftPositionMeters = getLeftPositionMeters();
-    lastRightPositionMeters = getRightPositionMeters();
+    // lastLeftPositionMeters = getLeftPositionMeters();
+    // lastRightPositionMeters = getRightPositionMeters();
+
+    wheelPositions = new DifferentialDriveWheelPositions(leftEncoder.getPosition(), rightEncoder.getPosition());
+
+    poseEstimator.updateWithTime(Timer.getFPGATimestamp(), new Rotation2d(), wheelPositions);
+    pose = poseEstimator.getEstimatedPosition();
   }
 
   public double getLeftPositionMeters() {
