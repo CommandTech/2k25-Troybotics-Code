@@ -38,18 +38,26 @@ import frc.robot.Constants;
 import edu.wpi.first.math.estimator.DifferentialDrivePoseEstimator;
 
 public class Drivetrain extends SubsystemBase {
-  private SparkMax leftDrive;
-  private SparkMax rightDrive;
+  private SparkMax leftDriveL;
+  private SparkMax leftDriveF;
+  private SparkMax rightDriveL;
+  private SparkMax rightDriveF;
   private DifferentialDrive differentialDrive;
-  private RobotConfig config = null;
+  private RobotConfig config;
   private DifferentialDriveKinematics kinematics;
   private Pose2d pose;
-  private SparkMaxConfig leftConfig;
-  private SparkMaxConfig rightConfig;
-  private RelativeEncoder leftEncoder;
-  private RelativeEncoder rightEncoder;
-  private SparkClosedLoopController leftController;
-  private SparkClosedLoopController rightController;
+  private SparkMaxConfig leftConfigL;
+  private SparkMaxConfig leftConfigF;
+  private SparkMaxConfig rightConfigL;
+  private SparkMaxConfig rightConfigF;
+  private RelativeEncoder leftEncoderL;
+  private RelativeEncoder leftEncoderF;
+  private RelativeEncoder rightEncoderL;
+  private RelativeEncoder rightEncoderF;
+  private SparkClosedLoopController leftControllerL;
+  private SparkClosedLoopController leftControllerF;
+  private SparkClosedLoopController rightControllerL;
+  private SparkClosedLoopController rightControllerF;
   private DifferentialDrivePoseEstimator poseEstimator;
   private DifferentialDriveWheelPositions wheelPositions;
   
@@ -58,47 +66,82 @@ public class Drivetrain extends SubsystemBase {
 
   /** Creates a new Drive. */
   public Drivetrain() {
-      leftDrive = new SparkMax(Constants.MotorConstants.LEFT_MOTOR_ID,MotorType.kBrushless);
-      leftEncoder = leftDrive.getEncoder();
-      leftController = leftDrive.getClosedLoopController();
+      leftDriveL = new SparkMax(Constants.MotorConstants.LEADER_LEFT_MOTOR_ID,MotorType.kBrushless);
+      leftEncoderL = leftDriveL.getEncoder();
+      leftControllerL = leftDriveL.getClosedLoopController();
 
-      leftConfig = new SparkMaxConfig();
-      leftConfig.inverted(Constants.MotorConstants.LEFT_MOTOR_INVERTED);
-      leftConfig.smartCurrentLimit(Constants.MotorConstants.LEFT_MOTOR_AMP_LIMIT);
-      leftConfig.closedLoop
+      leftConfigL = new SparkMaxConfig();
+      leftConfigL.inverted(Constants.MotorConstants.LEADER_LEFT_MOTOR_INVERTED);
+      leftConfigL.smartCurrentLimit(Constants.MotorConstants.LEADER_LEFT_MOTOR_AMP_LIMIT);
+      leftConfigL.closedLoop
         .p(Constants.MotorConstants.DRIVE_P)
         .i(Constants.MotorConstants.DRIVE_I)
         .d(Constants.MotorConstants.DRIVE_D)
         .velocityFF(Constants.MotorConstants.DRIVE_FF)
         .outputRange(0.0, 1.0);
-      leftDrive.configure(leftConfig, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
+      leftDriveL.configure(leftConfigL, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
 
+      leftDriveF = new SparkMax(Constants.MotorConstants.FOLLOWER_LEFT_MOTOR_ID,MotorType.kBrushless);
+      leftEncoderF = leftDriveF.getEncoder();
+      leftControllerF = leftDriveF.getClosedLoopController();
 
-      rightDrive = new SparkMax(Constants.MotorConstants.RIGHT_MOTOR_ID,MotorType.kBrushless);
-      rightController = rightDrive.getClosedLoopController();
-      rightEncoder = rightDrive.getEncoder();
+      leftConfigF = new SparkMaxConfig();
+      leftConfigF.inverted(Constants.MotorConstants.FOLLOWER_LEFT_MOTOR_INVERTED);
+      leftConfigF.smartCurrentLimit(Constants.MotorConstants.FOLLOWER_LEFT_MOTOR_AMP_LIMIT);
+      leftConfigF.closedLoop
+        .p(Constants.MotorConstants.DRIVE_P)
+        .i(Constants.MotorConstants.DRIVE_I)
+        .d(Constants.MotorConstants.DRIVE_D)
+        .velocityFF(Constants.MotorConstants.DRIVE_FF)
+        .outputRange(0.0, 1.0);
+      leftDriveF.configure(leftConfigF, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
+      
 
-      rightConfig = new SparkMaxConfig();
-      rightConfig.inverted(Constants.MotorConstants.RIGHT_MOTOR_INVERTED);
-      rightConfig.smartCurrentLimit(Constants.MotorConstants.RIGHT_MOTOR_AMP_LIMIT);
+      rightDriveL = new SparkMax(Constants.MotorConstants.LEADER_RIGHT_MOTOR_ID,MotorType.kBrushless);
+      rightEncoderL = rightDriveL.getEncoder();
+      rightControllerL = rightDriveL.getClosedLoopController();
 
-      rightDrive.configure(rightConfig, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
+      rightConfigL = new SparkMaxConfig();
+      rightConfigL.inverted(Constants.MotorConstants.LEADER_RIGHT_MOTOR_INVERTED);
+      rightConfigL.smartCurrentLimit(Constants.MotorConstants.LEADER_RIGHT_MOTOR_AMP_LIMIT);
+      rightConfigL.closedLoop
+        .p(Constants.MotorConstants.DRIVE_P)
+        .i(Constants.MotorConstants.DRIVE_I)
+        .d(Constants.MotorConstants.DRIVE_D)
+        .velocityFF(Constants.MotorConstants.DRIVE_FF)
+        .outputRange(0.0, 1.0);
+      rightDriveL.configure(rightConfigL, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
 
+      rightDriveF = new SparkMax(Constants.MotorConstants.FOLLOWER_RIGHT_MOTOR_ID,MotorType.kBrushless);
+      rightEncoderF = rightDriveF.getEncoder();
+      rightControllerF = rightDriveF.getClosedLoopController();
 
-      differentialDrive = new DifferentialDrive(leftDrive, rightDrive);
+      rightConfigF = new SparkMaxConfig();
+      rightConfigF.inverted(Constants.MotorConstants.FOLLOWER_RIGHT_MOTOR_INVERTED);
+      rightConfigF.smartCurrentLimit(Constants.MotorConstants.FOLLOWER_RIGHT_MOTOR_AMP_LIMIT);
+      rightConfigF.closedLoop
+        .p(Constants.MotorConstants.DRIVE_P)
+        .i(Constants.MotorConstants.DRIVE_I)
+        .d(Constants.MotorConstants.DRIVE_D)
+        .velocityFF(Constants.MotorConstants.DRIVE_FF)
+        .outputRange(0.0, 1.0);
+      rightDriveF.configure(rightConfigF, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
+      
+
+      differentialDrive = new DifferentialDrive(leftDriveL, rightDriveL);
       addChild("Differential Drive 1", differentialDrive);
       differentialDrive.setExpiration(0.1);
       differentialDrive.setMaxOutput(1.0);
 
       kinematics = new DifferentialDriveKinematics(0.8204);
       pose = new Pose2d();
-      wheelPositions = new DifferentialDriveWheelPositions(leftEncoder.getPosition(), rightEncoder.getPosition());
+      wheelPositions = new DifferentialDriveWheelPositions(leftEncoderL.getPosition(), rightEncoderL.getPosition());
 
       poseEstimator = new DifferentialDrivePoseEstimator(
         kinematics,
         new Rotation2d(),
-        leftEncoder.getPosition(),
-        rightEncoder.getPosition(),
+        leftEncoderL.getPosition(),
+        rightEncoderL.getPosition(),
         pose
       );
 
@@ -154,17 +197,17 @@ public class Drivetrain extends SubsystemBase {
     // lastLeftPositionMeters = getLeftPositionMeters();
     // lastRightPositionMeters = getRightPositionMeters();
 
-    wheelPositions = new DifferentialDriveWheelPositions(leftEncoder.getPosition(), rightEncoder.getPosition());
+    wheelPositions = new DifferentialDriveWheelPositions(leftEncoderL.getPosition(), rightEncoderL.getPosition());
 
     poseEstimator.updateWithTime(Timer.getFPGATimestamp(), new Rotation2d(), wheelPositions);
     pose = poseEstimator.getEstimatedPosition();
   }
 
   public double getLeftPositionMeters() {
-    return leftEncoder.getPosition() * Constants.DriveConstants.WHEEL_DIAMETER_METERS;
+    return leftEncoderL.getPosition() * Constants.DriveConstants.WHEEL_DIAMETER_METERS;
   }
   public double getRightPositionMeters() {
-    return rightEncoder.getPosition() * Constants.DriveConstants.WHEEL_DIAMETER_METERS;
+    return rightEncoderL.getPosition() * Constants.DriveConstants.WHEEL_DIAMETER_METERS;
   }
 
   // public void setDrive(double left, double right) {
@@ -183,11 +226,11 @@ public class Drivetrain extends SubsystemBase {
     setRightMotors(right);
   }
   public void setLeftMotors (double volt) {
-    leftDrive.set(volt);
+    leftDriveL.set(volt);
     
   }
   public void setRightMotors (double volt) {
-    rightDrive.set(volt);
+    rightDriveL.set(volt);
   }
 
   public Pose2d getPose()
@@ -201,7 +244,7 @@ public class Drivetrain extends SubsystemBase {
   }
   
   public DifferentialDriveWheelSpeeds getWheelSpeed(){
-    return new DifferentialDriveWheelSpeeds(leftDrive.getEncoder().getVelocity(), rightDrive.getEncoder().getVelocity());
+    return new DifferentialDriveWheelSpeeds(leftDriveL.getEncoder().getVelocity(), rightDriveL.getEncoder().getVelocity());
   }
   public ChassisSpeeds getRobotRelativeSpeeds(){
     return kinematics.toChassisSpeeds(getWheelSpeed());

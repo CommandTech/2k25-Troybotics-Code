@@ -14,19 +14,27 @@ package frc.robot;
  */
 public final class Constants {
   public static class MotorConstants {
-    public static final int LEFT_MOTOR_ID = 0;
-    public static final boolean LEFT_MOTOR_INVERTED = false;
-    public static final int LEFT_MOTOR_AMP_LIMIT = 40;
+    public static final int LEADER_LEFT_MOTOR_ID = 1;
+    public static final boolean LEADER_LEFT_MOTOR_INVERTED = true;
+    public static final int LEADER_LEFT_MOTOR_AMP_LIMIT = 40;
 
-    public static final int RIGHT_MOTOR_ID = 1;
-    public static final boolean RIGHT_MOTOR_INVERTED = false;
-    public static final int RIGHT_MOTOR_AMP_LIMIT = 40;
+    public static final int FOLLOWER_LEFT_MOTOR_ID = 2;
+    public static final boolean FOLLOWER_LEFT_MOTOR_INVERTED = true;
+    public static final int FOLLOWER_LEFT_MOTOR_AMP_LIMIT = 40;
+
+    public static final int LEADER_RIGHT_MOTOR_ID = 3;
+    public static final boolean LEADER_RIGHT_MOTOR_INVERTED = false;
+    public static final int LEADER_RIGHT_MOTOR_AMP_LIMIT = 40;
     
-    public static final int CORAL_MOTOR_ID = 2;
+    public static final int FOLLOWER_RIGHT_MOTOR_ID = 4;
+    public static final boolean FOLLOWER_RIGHT_MOTOR_INVERTED = false;
+    public static final int FOLLOWER_RIGHT_MOTOR_AMP_LIMIT = 40;
+    
+    public static final int CORAL_MOTOR_ID = 5;
     public static final boolean CORAL_MOTOR_INVERTED = false;
     public static final int CORAL_MOTOR_AMP_LIMIT = 40;
 
-    public static final int ALGAE_MOTOR_ID = 3;
+    public static final int ALGAE_MOTOR_ID = 6;
     public static final boolean ALGAE_MOTOR_INVERTED = false;
     public static final int ALGAE_MOTOR_AMP_LIMIT = 40;
 
@@ -38,7 +46,7 @@ public final class Constants {
   public static class DriveConstants {
     public static final double GEAR_REDUCTION = 1.0;
     public static final double WHEEL_DIAMETER_METERS = 0.1524;
-    public static final double TRACK_WIDTH_METERS = 0.820;
+    public static final double TRACK_WIDTH_METERS = 0.6731;
   }
   public static class OperatorConstants {
     public static final int DRIVER_PORT = 0;
