@@ -23,7 +23,6 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelPositions;
@@ -66,6 +65,7 @@ public class Drivetrain extends SubsystemBase {
 
   /** Creates a new Drive. */
   public Drivetrain() {
+
       leftDriveL = new SparkMax(Constants.MotorConstants.LEADER_LEFT_MOTOR_ID,MotorType.kBrushless);
       leftEncoderL = leftDriveL.getEncoder();
       leftControllerL = leftDriveL.getClosedLoopController();
